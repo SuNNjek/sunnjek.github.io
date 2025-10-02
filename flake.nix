@@ -17,22 +17,65 @@
     );
   in {
     packages = forAllSystems (pkgs: {
-      default = pkgs.stdenv.mkDerivation {
-        name = "sunnjek.github.io";
-        version = self.rev or self.dirtyRev;
+      default =
+        let 
+          name = "sunnjek.github.io";
+        in pkgs.stdenv.mkDerivation {
+          inherit name;
+          version = self.rev or self.dirtyRev;
 
-        src = self;
+          src = self;
 
-        buildInputs = [pkgs.hugo];
+          # Install modules in separate derivation so that the module install get access the internet
+          # The hash also won't change here all too often
+          modules = pkgs.stdenv.mkDerivation {
+            name = "${name}-modules";
+            src = self;
 
-        buildPhase = ''
-          hugo build -d public
-        '';
+            nativeBuildInputs = with pkgs; [
+              gitMinimal
+              cacert
+              hugo
+              go
+            ];
 
-        installPhase = ''
-          cp -R public $out
-        '';
-      };
+            configurePhase = ''
+              export HUGO_CACHEDIR=$TMPDIR/hugo-cache
+            '';
+
+            buildPhase = ''
+              hugo mod get
+            '';
+
+            installPhase = ''
+              cp -r --reflink=auto $HUGO_CACHEDIR/modules/filecache/modules/pkg/mod/cache/download $out
+            '';
+
+            dontFixup = true;
+
+            outputHashMode = "recursive";
+            outputHashAlgo = "sha256";
+            outputHash = "sha256-0eJnYjEKl/nwayo902a6JApINDqfW38x0r4SyDXGlK8=";
+          };
+
+          nativeBuildInputs = with pkgs; [
+            gitMinimal
+            go
+            hugo
+          ];
+
+          configurePhase = ''
+            export HUGO_MODULE_PROXY="file://$modules"
+          '';
+
+          buildPhase = ''
+            hugo build -d public
+          '';
+
+          installPhase = ''
+            cp -r --reflink=auto public $out
+          '';
+        };
     });
 
     devShells = forAllSystems (pkgs: {

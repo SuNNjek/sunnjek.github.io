@@ -1,0 +1,21 @@
+name: Deploy page
+
+on:
+    push:
+        branches: 'main'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+      - name: Build page with Nix
+        run: nix build
+      - name: Upload page
+        uses: actions/upload-pages-artifact@v1
+        with:
+            path: result/
+        

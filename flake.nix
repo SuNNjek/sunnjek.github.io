@@ -69,7 +69,7 @@
           '';
 
           buildPhase = ''
-            hugo build -d public
+            hugo build --minify -d public
           '';
 
           installPhase = ''

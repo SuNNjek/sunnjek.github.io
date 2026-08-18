@@ -3,6 +3,7 @@ name: Deploy page
 on:
   push:
     branches: 'main'
+  pull_request: {}
 
 jobs:
   build:
@@ -24,6 +25,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    if: ${{ github.ref == 'ref/heads/main' }}
     needs: build
     permissions:
       pages: write

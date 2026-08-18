@@ -16,7 +16,7 @@ jobs:
       - name: Build page with Nix
         run: nix build
       - name: Upload page as artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: result/
         

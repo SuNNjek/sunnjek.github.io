@@ -55,7 +55,7 @@
 
             outputHashMode = "recursive";
             outputHashAlgo = "sha256";
-            outputHash = "sha256-0eJnYjEKl/nwayo902a6JApINDqfW38x0r4SyDXGlK8=";
+            outputHash = "sha256-/mCz/frNo+LV7zUARtimv8y1vg2AY4kBWNrXUr13njg=";
           };
 
           nativeBuildInputs = with pkgs; [
